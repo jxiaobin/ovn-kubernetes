@@ -15,6 +15,7 @@ import (
 	// v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+
 	// "k8s.io/apimachinery/pkg/util/sets"
 	networkqosapi "github.com/ovn-org/ovn-kubernetes/go-controller/pkg/crd/networkqos/v1"
 	"k8s.io/client-go/tools/cache"
@@ -94,7 +95,19 @@ func (c *Controller) syncNetworkQoS(key string) error {
 // matching pod or namespace changes.
 func (c *Controller) ensureNetworkQos(nqos *networkqosapi.NetworkQoS) error {
 	cachedName := joinMetaNamespaceAndName(nqos.Namespace, nqos.Name)
-	desiredNQOSState := &networkQoSState{name: cachedName}
+
+	// srcAsIndex := GetNetworkQoSAddrSetDbIDs(nqos.Namespace, nqos.Name, "src", c.controllerName)
+	// srcAddrSet, err := c.addressSetFactory.NewAddressSet(srcAsIndex, nil)
+	// if err != nil {
+	// 	return fmt.Errorf("cannot create addressSet for %s: %w", cachedName, err)
+	// }
+
+	desiredNQOSState := &networkQoSState{
+		name:                  nqos.Name,
+		namespace:             nqos.Namespace,
+		networkAttachmentName: nqos.Spec.NetworkAttachmentName,
+		// srcAddrSet:            srcAddrSet,
+	}
 
 	// TODO: to be implemented...
 

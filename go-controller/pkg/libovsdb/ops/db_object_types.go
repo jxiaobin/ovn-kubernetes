@@ -132,6 +132,13 @@ var AddressSetEgressService = newObjectIDsType(addressSet, EgressServiceOwnerTyp
 	IPFamilyKey,
 })
 
+var AddressSetNetworkQoS = newObjectIDsType(addressSet, NetworkQoSOwnerType, []ExternalIDKey{
+	// nqos namespace:name
+	ObjectNameKey,
+	// gress rule's index
+	GressIdxKey,
+})
+
 var ACLAdminNetworkPolicy = newObjectIDsType(acl, AdminNetworkPolicyOwnerType, []ExternalIDKey{
 	// anp name
 	ObjectNameKey,
