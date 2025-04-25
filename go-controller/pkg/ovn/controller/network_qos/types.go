@@ -190,7 +190,7 @@ func (nqosState *networkQoSState) getAddressSetHashNames() []string {
 	return addrsetNames
 }
 
-func (nqosState *networkQoSState) cleanupStaleAddresses(addressSetMap map[string]sets.Set[string]) {
+func (nqosState *networkQoSState) cleanupStaleAddresses(addressSetMap map[string]sets.Set[string]) error {
 	if nqosState.SrcAddrSet != nil {
 		addresses := addressSetMap[nqosState.SrcAddrSet.GetName()]
 		v4Addresses, _ := nqosState.SrcAddrSet.GetAddresses()
@@ -201,7 +201,9 @@ func (nqosState *networkQoSState) cleanupStaleAddresses(addressSetMap map[string
 			}
 		}
 		if len(staleAddresses) > 0 {
-			nqosState.SrcAddrSet.DeleteAddresses(staleAddresses)
+			if err := nqosState.SrcAddrSet.DeleteAddresses(staleAddresses); err != nil {
+				return err
+			}
 		}
 	}
 	for _, egress := range nqosState.EgressRules {
@@ -218,10 +220,13 @@ func (nqosState *networkQoSState) cleanupStaleAddresses(addressSetMap map[string
 				}
 			}
 			if len(staleAddresses) > 0 {
-				dest.DestAddrSet.DeleteAddresses(staleAddresses)
+				if err := dest.DestAddrSet.DeleteAddresses(staleAddresses); err != nil {
+					return err
+				}
 			}
 		}
 	}
+	return nil
 }
 
 type GressRule struct {
