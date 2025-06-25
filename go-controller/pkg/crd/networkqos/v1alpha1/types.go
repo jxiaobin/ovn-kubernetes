@@ -49,8 +49,9 @@ type Spec struct {
 	// networkSelector selects the networks on which the pod IPs need to be added to the source address set.
 	// NetworkQoS controller currently supports `NetworkAttachmentDefinitions` type only.
 	// +optional
-	// +kubebuilder:validation:XValidation:rule="self == oldSelf", message="networkSelector is immutable"
+	// +kubebuilder:validation:XValidation:rule="self == oldSelf", message="networkSelectors is immutable"
 	// +kubebuilder:validation:XValidation:rule="self.all(sel, sel.networkSelectionType == 'ClusterUserDefinedNetworks' || sel.networkSelectionType == 'NetworkAttachmentDefinitions')", message="Unsupported network selection type"
+	// +kubebuilder:validation:XValidation:rule="self.filter(sel, sel.networkSelectionType == 'NetworkAttachmentDefinitions').all(sel, has(sel.networkAttachmentDefinitionSelector) && has(sel.networkAttachmentDefinitionSelector.networkSelector) && (has(sel.networkAttachmentDefinitionSelector.networkSelector.matchExpressions) || has(sel.networkAttachmentDefinitionSelector.networkSelector.matchLabels)))", message="networkSelector of networkAttachmentDefinitionSelector is required"
 	NetworkSelectors crdtypes.NetworkSelectors `json:"networkSelectors,omitempty"`
 
 	// podSelector applies the NetworkQoS rule only to the pods in the namespace whose label
